@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTypewriter } from "@/hooks/useTypewriter";
 import { useAdmin } from "@/contexts/AdminContext";
@@ -10,6 +10,13 @@ export default function LetterApp() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("surat");
   const { displayedText } = useTypewriter(isOpen && activeTab === "surat" ? content.letterText : "", 30, 600);
+  const letterScrollRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = letterScrollRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, [displayedText]);
 
   return (
     <div className="w-full min-h-[calc(100vh-6rem)] flex flex-col relative pb-16">
@@ -85,7 +92,8 @@ export default function LetterApp() {
                 {activeTab === "surat" && (
                   <motion.div
                     key="surat"
-                    className="w-full max-h-[75vh] bg-[#FDFBF7] rounded-2xl p-8 md:p-12 shadow-[0_0_50px_rgba(255,182,217,0.15)] overflow-y-auto border border-[#FFB6D9]/20"
+                    ref={letterScrollRef}
+                    className="w-full max-h-[75vh] bg-[#FDFBF7] rounded-2xl p-8 md:p-12 shadow-[0_0_50px_rgba(255,182,217,0.15)] overflow-y-auto border border-[#FFB6D9]/20 scroll-smooth"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
