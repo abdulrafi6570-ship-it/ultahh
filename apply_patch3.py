@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import sys
+
+path = "artifacts/birthday-os/src/pages/MemoriesApp.tsx"
+
+new_content = '''import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAdmin, MemoryCard } from "@/contexts/AdminContext";
@@ -114,3 +118,9 @@ export default function MemoriesApp() {
     </div>
   );
 }
+'''
+
+with open(path, "w", encoding="utf-8") as f:
+    f.write(new_content)
+
+print("PATCH BERHASIL diterapkan ke " + path)
