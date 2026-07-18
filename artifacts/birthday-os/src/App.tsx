@@ -18,13 +18,12 @@ import GiftsApp from "@/pages/GiftsApp";
 import BirthdayCakeApp from "@/pages/BirthdayCakeApp";
 import VoiceApp from "@/pages/VoiceApp";
 import FinalScene from "@/pages/FinalScene";
-import TwiboonApp from "@/pages/TwiboonApp";
 
 type AppPhase = "loading" | "app";
 
 type SectionState =
   | "home" | "gallery" | "letter" | "music" | "memories"
-  | "sky" | "gifts" | "cake" | "voice" | "twiboon" | "finale";
+  | "sky" | "gifts" | "cake" | "voice" | "finale";
 
 function AppInner() {
   const [phase, setPhase] = useState<AppPhase>("loading");
@@ -50,21 +49,6 @@ function AppInner() {
       {phase !== "loading" && (
       <div className="fixed inset-0 flex flex-col overflow-hidden">
 
-        {/* Twiboon gets its own full-height layer (not inside scrollable main) */}
-        <AnimatePresence>
-          {currentSection === "twiboon" && (
-            <motion.div
-              key="twiboon-layer"
-              className="absolute inset-x-0 top-0 z-[40] overflow-hidden"
-              style={{ bottom: "6rem" }}
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-            >
-              <TwiboonApp />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
       <main className="flex-1 overflow-y-auto overscroll-contain">
         <div className="pt-4 pb-6 px-3 sm:px-6 max-w-7xl mx-auto w-full">
           <AnimatePresence mode="wait">
@@ -84,8 +68,8 @@ function AppInner() {
               {currentSection === "sky"      && <SkyApp />}
               {currentSection === "gifts"    && <GiftsApp />}
               {currentSection === "cake"     && <BirthdayCakeApp onFinale={triggerFinale} />}
-              {currentSection === "voice"    && <VoiceApp />}
-              {currentSection === "finale"   && <FinalScene />}
+              {currentSection === "voice"   && <VoiceApp />}
+              {currentSection === "finale"  && <FinalScene />}
             </motion.div>
           </AnimatePresence>
         </div>

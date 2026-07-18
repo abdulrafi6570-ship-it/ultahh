@@ -3,38 +3,30 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
-import runtimeErrorOverlay from '@replit/vite-plugin-runtime-error-modal';
+// PORT is only needed for the dev server — not during `vite build`.
+const port = Number(process.env.PORT ?? '3000');
 
-const rawPort = process.env.PORT;
+// BASE_PATH defaults to '/' (correct for Vercel / any standard deployment).
+// In the Replit environment the artifact runner injects the real sub-path.
+const basePath = process.env.BASE_PATH ?? '/';
 
-if (!rawPort) {
-  throw new Error(
-    'PORT environment variable is required but was not provided.',
-  );
-}
-
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    'BASE_PATH environment variable is required but was not provided.',
-  );
-}
+const isReplit = process.env.REPL_ID !== undefined;
 
 export default defineConfig({
   base: basePath,
   plugins: [
     react(),
     tailwindcss(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== 'production' &&
-    process.env.REPL_ID !== undefined
+    // Runtime error overlay — Replit dev only
+    ...(isReplit
+      ? [
+          await import('@replit/vite-plugin-runtime-error-modal').then((m) =>
+            m.default(),
+          ),
+        ]
+      : []),
+    // Cartographer + dev banner — Replit non-production only
+    ...(isReplit && process.env.NODE_ENV !== 'production'
       ? [
           await import('@replit/vite-plugin-cartographer').then((m) =>
             m.cartographer({

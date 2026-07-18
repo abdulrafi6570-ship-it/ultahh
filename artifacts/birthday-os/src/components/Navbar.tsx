@@ -13,7 +13,6 @@ const tabs = [
   { id: "gifts",    label: "Hadiah",     icon: "🎁" },
   { id: "cake",     label: "Kue",        icon: "🎂" },
   { id: "voice",    label: "Suara",      icon: "🎤" },
-  { id: "twiboon",  label: "Twiboon",    icon: "🖼️" },
 ];
 
 // Secret: tap the portrait photo 5 times quickly to open admin
