@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCursorParticles } from "@/hooks/useCursorParticles";
-import { AdminProvider } from "@/contexts/AdminContext";
+import { AdminProvider, useAdmin } from "@/contexts/AdminContext";
 
 import LoadingScreen from "@/pages/LoadingScreen";
 import AdminPanel from "@/pages/AdminPanel";
@@ -31,8 +31,32 @@ function AppInner() {
   const [muted, setMuted] = useState(true);
   const [showAdmin, setShowAdmin] = useState(false);
   const { show: showTutorial, setShow: setShowTutorial } = useShouldShowTutorial();
+  const { content } = useAdmin();
+  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useCursorParticles();
+
+  useEffect(() => {
+    if (!bgAudioRef.current) bgAudioRef.current = new Audio();
+    const audio = bgAudioRef.current;
+    audio.loop = true;
+    if (content.audioObjectUrl && audio.src !== content.audioObjectUrl) {
+      audio.src = content.audioObjectUrl;
+    }
+    return () => {
+      audio.pause();
+    };
+  }, [content.audioObjectUrl]);
+
+  useEffect(() => {
+    const audio = bgAudioRef.current;
+    if (!audio || !content.audioObjectUrl) return;
+    if (muted || currentSection === "music") {
+      audio.pause();
+    } else {
+      audio.play().catch(() => {});
+    }
+  }, [muted, currentSection, content.audioObjectUrl]);
 
   const handleNavigate = (section: string) => setCurrentSection(section as SectionState);
   const triggerFinale = () => setCurrentSection("finale");
