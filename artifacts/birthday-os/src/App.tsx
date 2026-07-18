@@ -19,11 +19,12 @@ import GiftsApp from "@/pages/GiftsApp";
 import BirthdayCakeApp from "@/pages/BirthdayCakeApp";
 import VoiceApp from "@/pages/VoiceApp";
 import FinalScene from "@/pages/FinalScene";
+import TwiboonApp from "@/pages/TwiboonApp";
 
 type BootState = "loading" | "boot" | "unlocked";
 type SectionState =
   | "home" | "gallery" | "letter" | "music" | "memories"
-  | "sky" | "gifts" | "cake" | "voice" | "finale";
+  | "sky" | "gifts" | "cake" | "voice" | "twiboon" | "finale";
 
 function AppInner() {
   const [bootState, setBootState] = useState<BootState>("loading");
@@ -70,6 +71,7 @@ function AppInner() {
                   {currentSection === "gifts"    && <GiftsApp />}
                   {currentSection === "cake"     && <BirthdayCakeApp onFinale={triggerFinale} />}
                   {currentSection === "voice"    && <VoiceApp />}
+                  {currentSection === "twiboon"  && <TwiboonApp />}
                   {currentSection === "finale"   && <FinalScene />}
                 </motion.div>
               </AnimatePresence>
