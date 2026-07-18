@@ -3,8 +3,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCursorParticles } from "@/hooks/useCursorParticles";
 import { AdminProvider } from "@/contexts/AdminContext";
 
-import LoadingScreen from "@/pages/LoadingScreen";
-import BootScreen from "@/pages/BootScreen";
 import AdminPanel from "@/pages/AdminPanel";
 import TutorialOverlay, { useShouldShowTutorial } from "@/pages/TutorialOverlay";
 
@@ -21,13 +19,11 @@ import VoiceApp from "@/pages/VoiceApp";
 import FinalScene from "@/pages/FinalScene";
 import TwiboonApp from "@/pages/TwiboonApp";
 
-type BootState = "loading" | "boot" | "unlocked";
 type SectionState =
   | "home" | "gallery" | "letter" | "music" | "memories"
   | "sky" | "gifts" | "cake" | "voice" | "twiboon" | "finale";
 
 function AppInner() {
-  const [bootState, setBootState] = useState<BootState>("loading");
   const [currentSection, setCurrentSection] = useState<SectionState>("home");
   const [muted, setMuted] = useState(true);
   const [showAdmin, setShowAdmin] = useState(false);
@@ -39,83 +35,70 @@ function AppInner() {
   const triggerFinale = () => setCurrentSection("finale");
 
   return (
-    <div className="min-h-screen w-full font-sans">
-      <AnimatePresence mode="wait">
-        {bootState === "loading" && (
-          <LoadingScreen key="loading" onComplete={() => setBootState("boot")} />
-        )}
-        {bootState === "boot" && (
-          <BootScreen key="boot" onComplete={() => setBootState("unlocked")} />
+    <div className="fixed inset-0 flex flex-col overflow-hidden font-sans">
+      <main className="flex-1 overflow-y-auto overscroll-contain">
+        <div className="pt-4 pb-6 px-3 sm:px-6 max-w-7xl mx-auto w-full">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSection}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              className="w-full"
+            >
+              {currentSection === "home"     && <DashboardHome onNavigate={handleNavigate} />}
+              {currentSection === "gallery"  && <GalleryApp />}
+              {currentSection === "letter"   && <LetterApp />}
+              {currentSection === "music"    && <MusicApp />}
+              {currentSection === "memories" && <MemoriesApp />}
+              {currentSection === "sky"      && <SkyApp />}
+              {currentSection === "gifts"    && <GiftsApp />}
+              {currentSection === "cake"     && <BirthdayCakeApp onFinale={triggerFinale} />}
+              {currentSection === "voice"    && <VoiceApp />}
+              {currentSection === "twiboon"  && <TwiboonApp />}
+              {currentSection === "finale"   && <FinalScene />}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </main>
+
+      <Navbar
+        currentSection={currentSection}
+        onNavigate={handleNavigate}
+        muted={muted}
+        onToggleMute={() => setMuted(!muted)}
+        onOpenAdmin={() => setShowAdmin(true)}
+      />
+
+      {/* Tutorial — shown once on first visit */}
+      <AnimatePresence>
+        {showTutorial && !showAdmin && (
+          <TutorialOverlay key="tutorial" onDone={() => setShowTutorial(false)} />
         )}
       </AnimatePresence>
 
-      {bootState === "unlocked" && (
-        <div className="fixed inset-0 flex flex-col overflow-hidden">
-          <main className="flex-1 overflow-y-auto overscroll-contain">
-            <div className="pt-4 pb-6 px-3 sm:px-6 max-w-7xl mx-auto w-full">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentSection}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.22, ease: "easeOut" }}
-                  className="w-full"
-                >
-                  {currentSection === "home"     && <DashboardHome onNavigate={handleNavigate} />}
-                  {currentSection === "gallery"  && <GalleryApp />}
-                  {currentSection === "letter"   && <LetterApp />}
-                  {currentSection === "music"    && <MusicApp />}
-                  {currentSection === "memories" && <MemoriesApp />}
-                  {currentSection === "sky"      && <SkyApp />}
-                  {currentSection === "gifts"    && <GiftsApp />}
-                  {currentSection === "cake"     && <BirthdayCakeApp onFinale={triggerFinale} />}
-                  {currentSection === "voice"    && <VoiceApp />}
-                  {currentSection === "twiboon"  && <TwiboonApp />}
-                  {currentSection === "finale"   && <FinalScene />}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </main>
+      {/* Tutorial hint button */}
+      <AnimatePresence>
+        {!showTutorial && !showAdmin && (
+          <motion.button
+            key="tutorial-btn"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ delay: 0.5 }}
+            onClick={() => setShowTutorial(true)}
+            className="fixed bottom-[7.5rem] right-4 z-[120] w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm border border-[#FFB6D9]/40 shadow-md flex items-center justify-center text-[#D45A8F] font-bold text-sm hover:bg-[#FFB6D9]/20 transition-colors cursor-pointer select-none"
+            aria-label="Panduan"
+          >
+            ?
+          </motion.button>
+        )}
+      </AnimatePresence>
 
-          <Navbar
-            currentSection={currentSection}
-            onNavigate={handleNavigate}
-            muted={muted}
-            onToggleMute={() => setMuted(!muted)}
-            onOpenAdmin={() => setShowAdmin(true)}
-          />
-
-          {/* Tutorial — shown once on first visit, floating above navbar */}
-          <AnimatePresence>
-            {showTutorial && !showAdmin && (
-              <TutorialOverlay key="tutorial" onDone={() => setShowTutorial(false)} />
-            )}
-          </AnimatePresence>
-
-          {/* Tutorial hint button — always accessible after first visit */}
-          <AnimatePresence>
-            {!showTutorial && !showAdmin && bootState === "unlocked" && (
-              <motion.button
-                key="tutorial-btn"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ delay: 1 }}
-                onClick={() => setShowTutorial(true)}
-                className="fixed bottom-[7.5rem] right-4 z-[120] w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm border border-[#FFB6D9]/40 shadow-md flex items-center justify-center text-[#D45A8F] font-bold text-sm hover:bg-[#FFB6D9]/20 transition-colors cursor-pointer select-none"
-                aria-label="Panduan"
-              >
-                ?
-              </motion.button>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {showAdmin && <AdminPanel key="admin" onClose={() => setShowAdmin(false)} />}
-          </AnimatePresence>
-        </div>
-      )}
+      <AnimatePresence>
+        {showAdmin && <AdminPanel key="admin" onClose={() => setShowAdmin(false)} />}
+      </AnimatePresence>
     </div>
   );
 }
