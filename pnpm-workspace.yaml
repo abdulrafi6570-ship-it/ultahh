@@ -160,5 +160,5 @@ overrides:
   "drizzle-kit>esbuild": "0.27.3"
 
 allowBuilds:
-  '@tsparticles/engine': set this to true or false
-  esbuild: set this to true or false
+  '@tsparticles/engine': false
+  esbuild: false
