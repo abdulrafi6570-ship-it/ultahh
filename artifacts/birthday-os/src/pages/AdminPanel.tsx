@@ -5,6 +5,7 @@ import { useAdmin, MemoryCard, Gift } from "@/contexts/AdminContext";
 import { compressImage } from "@/utils/compressImage";
 import { saveAudioToIDB } from "@/lib/audioStorage";
 import { saveVN, loadAllVNs, deleteVN, VNMeta } from "@/lib/vnStorage";
+import CombinationLock from "@/components/CombinationLock";
 
 const ADMIN_PASSWORD = "0808";
 
@@ -204,19 +205,39 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
         </div>
 
         {!isAdmin ? (
-          <div className="flex flex-col items-center justify-center gap-5 p-10 flex-1">
-            <div className="text-5xl">🔐</div>
+          <div className="flex flex-col items-center justify-center gap-6 px-6 py-8 flex-1">
             <div className="text-center">
-              <h3 className="text-xl font-bold mb-1 text-foreground">Masukkan Password</h3>
-              <p className="text-foreground/55 text-sm">Hanya admin yang bisa mengubah konten</p>
+              <h3 className="text-xl font-bold mb-1 text-foreground">Putar ke kombinasi yang benar</h3>
+              <p className="text-foreground/50 text-sm">Geser tiap angka untuk membuka panel admin</p>
             </div>
+
+            {/* Combination lock — auto-unlocks on correct combo */}
+            <div className="flex flex-col items-center gap-10 py-4">
+              <CombinationLock targetPin={ADMIN_PASSWORD} onMatch={() => { setAdmin(true); setError(""); }} />
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3 w-full max-w-xs">
+              <div className="flex-1 h-px bg-[#FFB6D9]/30" />
+              <span className="text-xs text-foreground/35 font-medium">atau ketik</span>
+              <div className="flex-1 h-px bg-[#FFB6D9]/30" />
+            </div>
+
+            {/* Text fallback */}
             <div className="flex flex-col gap-3 w-full max-w-xs">
-              <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && handleLogin()} placeholder="••••" autoFocus
-                className="w-full px-4 py-3 rounded-xl border-2 border-[#FFB6D9]/40 focus:border-[#FFB6D9] outline-none text-center text-3xl tracking-[0.6em] font-mono bg-white/80 text-foreground" />
+              <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && handleLogin()}
+                placeholder="••••"
+                className="w-full px-4 py-3 rounded-xl border-2 border-[#FFB6D9]/40 focus:border-[#FFB6D9] outline-none text-center text-3xl tracking-[0.6em] font-mono bg-white/80 text-foreground"
+              />
               {error && <p className="text-red-500 text-sm text-center font-medium">{error}</p>}
-              <button onClick={handleLogin}
-                className="w-full py-3 bg-[#FFB6D9] hover:bg-[#D45A8F] text-white font-bold rounded-xl transition-colors cursor-pointer shadow-md text-base">
+              <button
+                onClick={handleLogin}
+                className="w-full py-3 bg-[#FFB6D9] hover:bg-[#D45A8F] text-white font-bold rounded-xl transition-colors cursor-pointer shadow-md text-base"
+              >
                 Masuk
               </button>
             </div>
