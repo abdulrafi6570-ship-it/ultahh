@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCursorParticles } from "@/hooks/useCursorParticles";
 import { AdminProvider } from "@/contexts/AdminContext";
 
+import LoadingScreen from "@/pages/LoadingScreen";
 import AdminPanel from "@/pages/AdminPanel";
 import TutorialOverlay, { useShouldShowTutorial } from "@/pages/TutorialOverlay";
 
@@ -19,11 +20,14 @@ import VoiceApp from "@/pages/VoiceApp";
 import FinalScene from "@/pages/FinalScene";
 import TwiboonApp from "@/pages/TwiboonApp";
 
+type AppPhase = "loading" | "app";
+
 type SectionState =
   | "home" | "gallery" | "letter" | "music" | "memories"
   | "sky" | "gifts" | "cake" | "voice" | "twiboon" | "finale";
 
 function AppInner() {
+  const [phase, setPhase] = useState<AppPhase>("loading");
   const [currentSection, setCurrentSection] = useState<SectionState>("home");
   const [muted, setMuted] = useState(true);
   const [showAdmin, setShowAdmin] = useState(false);
@@ -35,7 +39,16 @@ function AppInner() {
   const triggerFinale = () => setCurrentSection("finale");
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden font-sans">
+    <div className="min-h-screen w-full font-sans">
+      {/* Pink loading screen — keep, skip boot terminal */}
+      <AnimatePresence mode="wait">
+        {phase === "loading" && (
+          <LoadingScreen key="loading" onComplete={() => setPhase("app")} />
+        )}
+      </AnimatePresence>
+
+      {phase !== "loading" && (
+      <div className="fixed inset-0 flex flex-col overflow-hidden">
       <main className="flex-1 overflow-y-auto overscroll-contain">
         <div className="pt-4 pb-6 px-3 sm:px-6 max-w-7xl mx-auto w-full">
           <AnimatePresence mode="wait">
@@ -99,6 +112,8 @@ function AppInner() {
       <AnimatePresence>
         {showAdmin && <AdminPanel key="admin" onClose={() => setShowAdmin(false)} />}
       </AnimatePresence>
+      </div>
+      )}
     </div>
   );
 }

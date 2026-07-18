@@ -178,15 +178,22 @@ export default function TwiboonApp() {
     nextId: 1,
   });
 
-  // ── fit canvas to available space ────────────────────────────────────────
+  // ── fit canvas to available space ─────────────────────────────────────────
+  // We calculate directly from window size to avoid relying on flex clientHeight
+  // which may be 0 when the canvas is first mounted inside a scrolling container.
+  //   navbar  ≈ 100px  (tabs + strip)
+  //   top bar ≈  48px  (template / progress / save row)
+  //   bot bar ≈  52px  (tambah / hapus / zoom row)
+  //   padding ≈  28px  (vertical gaps)
+  const CHROME_H = 100 + 48 + 52 + 28;
+
   const fitCanvas = useCallback(() => {
     const canvas = canvasRef.current;
-    const wrap = canvasWrapRef.current;
     const e = eng.current;
-    if (!canvas || !wrap || !e.templateImg) return;
-    const availW = wrap.clientWidth;
-    const availH = wrap.clientHeight;
-    const ratio = e.natH / e.natW;
+    if (!canvas || !e.templateImg) return;
+    const availW = window.innerWidth  - 24;   // horizontal padding
+    const availH = window.innerHeight - CHROME_H;
+    const ratio  = e.natH / e.natW;
     let cssW = availW;
     let cssH = cssW * ratio;
     if (cssH > availH) { cssH = availH; cssW = cssH / ratio; }
