@@ -73,7 +73,7 @@ function AppInner() {
       {phase !== "loading" && (
       <div className="fixed inset-0 flex flex-col overflow-hidden">
 
-      <main className="flex-1 overflow-y-auto overscroll-contain">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
         <div className="pt-4 pb-6 px-3 sm:px-6 max-w-7xl mx-auto w-full">
           <AnimatePresence mode="wait">
             <motion.div
